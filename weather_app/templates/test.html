@@ -1,0 +1,51 @@
+<body>
+  <form action="" method="post">
+    {% csrf_token %}
+    <label for="choice">Select The State:</label>
+    <select id="choice" name="choice">
+      {% for item in st %}
+      <option value="{{item}}">{{item}}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Submit">
+  </form>
+
+  {% if request.method == 'POST' %}
+  {% if temp %}
+  <div class="chart-container">
+    <div class="chart">
+      <div class="chart-title">CURRENT WEATHER</div>
+      <div class="chart-body">
+        {% for i in temp %}
+        <h1>{{i}}</h1>
+        {% endfor %}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">DENSITY OF FLOOD AFFECTED AREAS</div>
+      <div class="chart-body">
+        {{dens|safe}}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">SEVERITY LEVEL OF FLOOD</div>
+      <div class="chart-body">
+        {{cl1|safe}}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">TOTAL HUMAN FATALITY</div>
+      <div class="chart-body">
+        {{cl3|safe}}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p>Please make a selection above.</p>
+  {% endif %}
+  {% endif %}
+</body>

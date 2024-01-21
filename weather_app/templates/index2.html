@@ -1,0 +1,252 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Information</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <style>
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/static/images/flood.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0.75;
+      /* Remove the blur effect */
+    }
+
+    body {
+      
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 20px;
+    }
+    .main-heading{
+      font-weight: 700 !important;
+      background-color: transparent;
+      opacity: 0.9;
+      margin-left: 5vw;
+      text-align: center;
+      font-size: 50px !important;
+      color: rgb(25, 13, 96);
+      font-family: sans-serif;
+      font-style: italic;
+    }
+    .map-heading{
+      background-color: transparent;
+      opacity: 0.9;
+      color: rgb(0, 0, 0);
+      font-family: sans-serif;
+      
+    }
+    .experiment-summary {
+      flex-basis: 60%;
+      /* Allocate 60% width for text */
+      background-color: rgba(255, 255, 255, 0.7);
+      opacity: 0.75;
+      color: black;
+      font-weight: 600;
+      font-size: larger;
+      /* Adjust the opacity here */
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      /* Slightly reduce text size */
+      margin-right: 10px;
+      /* Add spacing between text and matrix */
+    }
+
+    .experiment-summary h3 {
+      font-size: 20px;
+      /* Increase heading size */
+    }
+
+    .confusion-matrix {
+      flex-basis: 40%;
+      background-color: rgba(255, 255, 255, 0.7);
+      opacity: 0.75;
+      border-radius: 10px;
+      padding: 5px;
+      /* Allocate 40% width for the confusion matrix */
+    }
+
+    .confusion-matrix img {
+      max-width: 100%;
+      height: auto;
+      opacity: 1;
+      /* Set opacity to 100% for the confusion matrix */
+    }
+
+    .center-table {
+      margin: 0 auto;
+      margin-top: 20vh !important;
+      border: 1px solid #000;
+      background-color: rgba(255, 255, 255, 0.7);
+      opacity: 0.75;
+      
+      /* Add a border around the table */
+    }
+
+    .center-div {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    /* Style for the container div */
+    .table-and-chart-container {
+      display: flex;
+      /* Make the containers flex containers */
+      justify-content: space-between;
+      /* Spread the content horizontally */
+      padding: 30px 0;
+    }
+
+    /* Style for the table and chart divs */
+    .table-container,
+    .chart-container {
+      flex-basis: 48%;
+      /* Allocate 48% of the container width for each element with some spacing in between */
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .chart {
+      width: 600px;
+      height: 400px;
+      margin: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .chart-body {
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="row ec-justify-space ec-align-item">
+        <div class="ec-logo">
+          <img src="{% static 'images/logo.png' %}" alt="Logo"><span>IFMS</span>
+        </div>
+        <div class="ec-menu">
+          <ul>
+            <li><a href="{% url 'myapp:home' %}">Home</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'myapp:flood' %}">FLOOD</a></li>
+            <li><a href="{% url 'myapp:logout' %}">Logout</a></li>
+            <li> <a href="#">Welcome {{user}}</a></li>
+            {% else %}
+            <li><a href="{% url 'myapp:login' %}">LOGIN</a></li>
+            <li><a href="{% url 'myapp:register' %}">REGISTER</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="table-and-chart-container">
+    <!-- Add the table here with borders -->
+    <div class="table-container">
+      <h1 class="mx-auto main-heading">
+        Indian Flood Monitoring System
+      </h1>
+      <table class="center-table">
+        <tr>
+          <th>Rank</th>
+          <th>State Name</th>
+          <th>Severity Level</th>
+          <th>Human Fatality</th>
+        </tr>
+        {% for i in data_table%}
+        <tr>
+          <td>{{i.3}}</td>
+          <td>{{i.0}}</td>
+          <td>{{i.1}}</td>
+          <td>{{i.2}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <!-- End of the table container -->
+
+    <!-- Add the centered div with the text "Chart" here -->
+    <div class="chart-container">
+      <div class="center-div">
+        <h3 class="map-heading">Top 3 Flood Affected States in India</h3>
+        <div class="chart">
+          <div class="chart-body">
+            {{map|safe}}
+            <!-- Insert chart 1 code here -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End of the chart container -->
+  </div>
+  <div class="container">
+
+
+    <div class="experiment-summary">
+      <h2>Experiment Summary</h2>
+
+      <h3>1. Data Preprocessing and Conversion:</h3>
+      <p>
+        We predicted flood severity in Indian regions using a RandomForestClassifier. Data preprocessing involved
+        dropping
+        irrelevant columns, converting categorical data to numerical, and handling missing values. 'Severity' was
+        categorized
+        into three classes.
+      </p>
+
+      <h3>2. Feature Selection and Scaling:</h3>
+      <p>
+        Feature selection chose relevant columns using SelectKBest with chi-squared test. Numeric columns were retained.
+        Feature scaling used StandardScaler.
+      </p>
+
+      <h3>3. Model Building and Evaluation:</h3>
+      <p>
+        The dataset was split 80-20 for training-testing. RandomForestClassifier achieved 64% accuracy. Model
+        performance was
+        assessed using accuracy, precision, recall, and F1-score.
+      </p>
+
+      <h3>4. Significance and Future Considerations:</h3>
+      <p>
+        Insights into flood severity were provided. Further optimization and data refinement may be needed. The
+        classification
+        report details model performance.
+      </p>
+    </div>
+    <div class="confusion-matrix">
+      <h2>Confusion Matrix</h2>
+      <img src="/static/images/cm.png" alt="Confusion Matrix">
+      <p class="matrix-description">
+        A confusion matrix is a visualization used in machine learning to assess the performance of a classification
+        model. It provides a breakdown of how the model's predictions compare to the actual data, distinguishing between
+        true positives, true negatives, false positives, and false negatives.
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>

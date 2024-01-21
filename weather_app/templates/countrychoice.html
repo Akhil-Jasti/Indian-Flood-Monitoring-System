@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .chart-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 50px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .chart {
+      width: 700px;
+      height: 600px;
+      margin: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .rainfall {
+      width: 700px;
+      margin: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .chart-title {
+      font-size: 24px;
+      color: #333;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .chart-body {
+      padding: 20px;
+    }
+
+    .data-div {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <form action="" method="post">
+    {% csrf_token %}
+    <label for="choice">Select The State:</label>
+    <select id="choice" name="choice">
+      {% if choice %}
+      <option value="{{choice}}" selected>{{choice}}</option>
+      <option value='India'>India</option>
+      {% else %}
+      <option value='India' selected>India</option>
+      {% endif %}
+
+      {% for item in st %}
+      {% if item != choice %}
+      <option value="{{item}}">{{item}}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+    <input type="submit" value="Submit">
+  </form>
+
+
+  <div class="chart-container">
+    {% if temp %}
+    <div class="chart">
+      <div class="chart-title">CURRENT WEATHER</div>
+      <div class="chart-body">
+        <img src="{{img}}" alt="">
+        {% for i in temp %}
+        <h1>{{i}}</h1>
+        {% endfor %}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+    {% endif %}
+    {% if per %}
+    <div class="rainfall">
+      <div class="chart-title">The Chance of flood happening is <b>{{ per }}</b>%</div>
+    </div>
+    {% endif %}
+    <div class="chart">
+      <div class="chart-title">PREVIOUS RAIN FALL TRENDS</div>
+      <div class="container">
+        <p>Choose Data for:</p>
+        <div>
+          <label>
+            <input type="radio" name="time-period" value="3y" id="radio_3y"> Last 3 Years
+          </label>
+          <label>
+            <input type="radio" name="time-period" value="5y" id="radio_5y" checked> Last 5 Years
+          </label>
+          <label>
+            <input type="radio" name="time-period" value="10y" id="radio_10y"> Last 10 Years
+          </label>
+        </div>
+      </div>
+      <div class="data-div" id="line_3y" style="display: none;">
+        <div class="chart-body ">
+          {{chart3|safe}}
+          <!-- Insert chart 1 code here -->
+        </div>
+      </div>
+
+      <div class="data-div" id="line_5y" style="display: block;">
+        <div class="chart-body ">
+          {{chart_5y|safe}}
+          <!-- Insert chart 1 code here -->
+        </div>
+      </div>
+
+      <div class="data-div" id="line_10y" style="display: none;">
+        <div class="chart-body ">
+          {{chart_10y|safe}}
+          <!-- Insert chart 1 code here -->
+        </div>
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">DENSITY OF FLOOD AFFECTED AREAS</div>
+      <div class="chart-body">
+        {{dens_w|safe}}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">SEVERITY LEVEL OF FLOOD</div>
+      <div class="chart-body">
+        {{cl1_w|safe}}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">TOTAL HUMAN FATALITY</div>
+      <div class="chart-body">
+        {{cl3_w|safe}}
+        <!-- Insert chart 1 code here -->
+      </div>
+    </div>
+
+  </div>
+  {% if flood_relief_num and flood_relief_name %}
+  <!-- Table to display flood_relief_num and flood_relief_name -->
+  <table class='chart-container chart-body'>
+    <tr>
+      <th>Flood Relief Number</th>
+      <th>Flood Relief Name</th>
+    </tr>
+    <tr>
+      <td>{{ flood_relief_num }}</td>
+      <td>{{ flood_relief_name }}</td>
+    </tr>
+  </table>
+  {% endif %}
+  <script>
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    const dataDivs = document.querySelectorAll('.data-div');
+
+    radioButtons.forEach((radio) => {
+      radio.addEventListener('change', () => {
+        const selectedValue = document.querySelector('input[type="radio"]:checked').value;
+        dataDivs.forEach((div) => {
+          div.style.display = 'none';
+        });
+        document.getElementById(`line_${selectedValue}`).style.display = 'block';
+      });
+    });
+  </script>
+
+</body>
+
+</html>

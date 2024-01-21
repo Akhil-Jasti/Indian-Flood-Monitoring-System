@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+
+
+<div class="custom_form content-section col-md-8 col-md-offset-2">
+  <form method="POST">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      {{ form|crispy}}
+    </fieldset>
+    <center>
+      <button type="submit"><span class="glyphicon glyphicon-check"></span>sign up</button>
+    </center>
+    <br />
+    <sub><a href="{% url "myapp:login" %}">Already have an account ?</a></sub>
+  </form>
+</div>
+{% endblock content %}
